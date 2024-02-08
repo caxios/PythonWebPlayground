@@ -1,0 +1,7 @@
+<h1>Message board homepage</h1>
+<ul>
+  {% for post in post_list %}
+    <li>{{ post.text }}</li>
+  {% endfor %}
+  <a href="{% url 'otherapp:other' %}">눌러주세요</a>
+</ul>
