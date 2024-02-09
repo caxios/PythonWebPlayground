@@ -1,5 +1,5 @@
 from django import forms
-from .models import Product
+from .models import Product, Comment
 
 class productForm(forms.ModelForm):
     class Meta:
@@ -11,3 +11,8 @@ class productForm(forms.ModelForm):
             'price':forms.TextInput(attrs={"class":"form-control"}),
             'description':forms.TextInput(attrs={"class":"form-control"}),
         }
+
+class commentForm(forms.ModelForm):
+    class Meta:
+        model = Comment
+        fields = ['comment_body']

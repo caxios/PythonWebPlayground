@@ -21,6 +21,34 @@
                 </div>
             </div>
         </div>
+        <div class="col-md-4">
+            <div style="margin: 5px; padding:2px">
+               Add Comments (0)
+               <br>
+               <hr>
+   
+               {% if not product.comments.all %}
+   
+                  <p>Not comments added yet...</p>
+                  <p><a class="btn btn-primary" href="{% url 'addComment' product.pk %}">  Add Comment </a></p>
+   
+               {% else %}
+   
+                   {% for comment in product.comments.all %}   
+                       <h5><strong>{{ comment.commenter_name }}</strong></h5>
+                       <p>{{ comment.comment_body }}</p>
+                       <p><small>{{ comment.date_added }}</small></p>
+
+                       {% if request.user.username == comment.commenter_name %}
+                           <p><a class="btn btn-primary" href="{% url 'addComment' product.pk %}">  Add Comment </a></p>
+                           <p><a class="btn btn-danger" href="{% url 'deleteComment' product.pk %}">  Delete Comment </a></p>
+                       {% endif %}
+                   {% endfor %}
+
+               {% endif %}
+
+            </div>
+         </div>
         
     </div>
 {% endblock %}
