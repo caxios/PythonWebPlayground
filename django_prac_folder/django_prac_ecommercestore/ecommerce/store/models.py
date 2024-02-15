@@ -1,16 +1,17 @@
 from django.db import models
 from django.contrib.auth.models import User
 
+# reverse is a function that can be used to make url
+from django.urls import reverse
 
-# When database is created, data table would named as : "(app folder's name)_(model's name)"
+# When database is created, data table would named as : "(app folder's name)_(model's name) as default"
 
 
 class Category(models.Model):
     name = models.CharField(max_length=250, db_index=True)
     
     # 'Slug' is a string that can only include characters, numbers, dashes, and underscores. 
-    # It is the part of a URL that identifies a particular page on a website, 
-    # in a human-friendly form
+    # It is the part of a URL that identifies a particular page on a website, in a human-friendly form
     slug = models.SlugField(max_length=250, unique=True)
 
     class Meta:
@@ -20,6 +21,9 @@ class Category(models.Model):
         at the end of model name if this attribute is not specified. 
         """
         verbose_name_plural = 'categories'
+
+    def get_absolute_url(self):
+        return reverse('store:category_list', args=[self.slug])
 
     
     def __str__(self):
@@ -37,16 +41,30 @@ class Product(models.Model):
     author = models.CharField(max_length=255, default='admin')
     description = models.TextField(blank=True)
     image = models.ImageField(upload_to='images/')
-    slug = models.SlugField(max_length=255)
     price = models.DecimalField(max_digits=4, decimal_places=2)
     in_stock = models.BooleanField(default=True)
     is_active = models.BooleanField(default=True)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
+    slug = models.SlugField(max_length=255)
 
     class Meta:
         verbose_name_plural = 'Products'
         ordering = ('-created',)
+
+    def get_absolute_url(self):
+        """
+        Q: Why use get_absolute_url?
+        A: In order to dynamically access to url that is associated with particular object.
+           'reverse' function makes url pattern. And websites where each data object has each
+           own page(like post in blog or product page in ecommerce etc). Without this function,
+           we need to manually type url for every each objects. But with get_absolute_url, only by
+           calling this function able us to access to that specific object.
+           In this case, we have url named 'product_detail' inside of urls.py file of store app folder.
+           And that url requiring url-parameter called 'slug' of slug type. So we are feeding 
+           'self.slug', which is slug of Product object, as args(arguments).
+        """
+        return reverse('store:product_detail', args=[self.slug])
 
     def __str__(self):
         return self.title

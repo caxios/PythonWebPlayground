@@ -41,4 +41,4 @@ A : When we see 'settings.py' in project folder at development level(before prod
 """
 if settings.DEBUG:
     # save images or media files to 'settings.MEDIA_ROOT', which are uploaded from admin site.
-    urlpatterns += static(settings.MEDIA_URL, document=settings.MEDIA_ROOT)
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
