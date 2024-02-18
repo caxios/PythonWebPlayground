@@ -6,6 +6,19 @@ from django.urls import reverse
 
 # When database is created, data table would named as : "(app folder's name)_(model's name) as default"
 
+class ProductManager(models.Manager):
+    """
+    Q: Why we need 'ProductManger'? Why use 'models.Manager'
+    A: In django, we make models.py fat and views.py slim as possible, since dealing with database or
+       querying data inside of models.py seems much intuitive than doing it in views.py. And to handle 
+       filtering(querying) for 'Product' datatable, we have made 'ProductManager' in models.py, where
+       'Product' model exists.
+    
+    Q: Purpose of get_queryset?
+    A: To handle filtering of 'Product' objects.
+    """
+    def get_queryset(self):
+        return super(ProductManager, self).get_queryset().filter(is_active=True)
 
 class Category(models.Model):
     name = models.CharField(max_length=250, db_index=True)
@@ -47,6 +60,14 @@ class Product(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
     slug = models.SlugField(max_length=255)
+    
+    # 
+    objects = models.Manager()
+    
+    # Since 'ProductManager' overriding 'set_queryset' from its parent(models.Manager), and filtering
+    # or querying objects that column value 'is_active' is set to True, when calling 'Product.products'
+    # instead of 'Product.objects', 'set_queryset' will be applied.
+    products = ProductManager()
 
     class Meta:
         verbose_name_plural = 'Products'

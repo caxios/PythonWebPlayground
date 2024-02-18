@@ -32,6 +32,7 @@
             <img class="img-fluid" alt="Responsive image" src="{{ product.image.url }}">
             <div class="card-body">
               <p class="card-text">
+                <!--without get_absolute_url, then we need to feed '{% url 'store:product_detail' slug %} to href'-->
                 <a class="text-dark text-decoration-none" href="{{ product.get_absolute_url }}">{{ product.title }}</a>
               </p>
               <div class="d-flex justify-content-between align-items-center">

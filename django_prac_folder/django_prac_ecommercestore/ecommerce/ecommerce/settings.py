@@ -66,8 +66,11 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 
-                # 'categories' is now scanned by django as part of template
-                'store.views.categories',
+                # 'categories' is now scanned by django as a context, and this 'categories'
+                # now available as context in all templates.
+                # 'store.views.categories', this is ok, but to make this line of code more
+                # django way, we can instead write code like this :
+                'store.context_processors.categories'
             ],
         },
     },
@@ -121,7 +124,14 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
+# Specifies the URL prefix that will be used when referring to static files.
 STATIC_URL = 'static/'
+
+# Tells django where our static folder is located.
+STATICFILES_DIR = [
+    
+    os.path.join(BASE_DIR, 'static')
+]
 
 MEDIA_URL = "/media/"
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')

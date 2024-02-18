@@ -1,11 +1,14 @@
 from django.shortcuts import get_object_or_404, render
 from .models import Product, Category
 
-def categories(request):
-    return {'categories':Category.objects.all()}
 
 def product_all(request):
-    products = Product.objects.all()
+    
+    # this code is now act as Product.objects.filter(is_active=True), since we set 
+    # 'ProductManager' for 'Product' model in models.py Since we set 'ProductManager' for 'Product'
+    # model, now all 'Product' objects apply 'set_queryset'. But Product.objects.all() works as same.
+    products = Product.products.all()
+    
     return render(request, 'store/home.html', {'products':products})
 
 def product_detail(request, slug):
