@@ -36,6 +36,18 @@ class Category(models.Model):
         verbose_name_plural = 'categories'
 
     def get_absolute_url(self):
+
+        """
+        Q: Why use get_absolute_url?
+        A: In order to dynamically access to url that is associated with particular object.
+           'reverse' function makes url pattern. And each data objects in websites has each
+           own page(like post in blog or product page in ecommerce etc). Without this function,
+           we need to manually type url for every each objects. But with get_absolute_url, only by
+           calling this function able us to access to that specific object.
+           In this case, we have url named 'category_list' inside of urls.py file of store app folder.
+           And that url requiring url-parameter called 'slug' of slug type. So we are feeding 
+           'self.slug', which is slug of Category object, as args(arguments).
+        """
         return reverse('store:category_list', args=[self.slug])
 
     
@@ -74,17 +86,6 @@ class Product(models.Model):
         ordering = ('-created',)
 
     def get_absolute_url(self):
-        """
-        Q: Why use get_absolute_url?
-        A: In order to dynamically access to url that is associated with particular object.
-           'reverse' function makes url pattern. And websites where each data object has each
-           own page(like post in blog or product page in ecommerce etc). Without this function,
-           we need to manually type url for every each objects. But with get_absolute_url, only by
-           calling this function able us to access to that specific object.
-           In this case, we have url named 'product_detail' inside of urls.py file of store app folder.
-           And that url requiring url-parameter called 'slug' of slug type. So we are feeding 
-           'self.slug', which is slug of Product object, as args(arguments).
-        """
         return reverse('store:product_detail', args=[self.slug])
 
     def __str__(self):

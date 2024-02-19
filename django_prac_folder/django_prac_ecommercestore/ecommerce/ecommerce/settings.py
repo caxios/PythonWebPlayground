@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     'store',
+    'basket',
 ]
 
 MIDDLEWARE = [
@@ -70,7 +71,8 @@ TEMPLATES = [
                 # now available as context in all templates.
                 # 'store.views.categories', this is ok, but to make this line of code more
                 # django way, we can instead write code like this :
-                'store.context_processors.categories'
+                'store.context_processors.categories',
+                'basket.context_processors.basket',
             ],
         },
     },
@@ -127,7 +129,8 @@ USE_TZ = True
 # Specifies the URL prefix that will be used when referring to static files.
 STATIC_URL = 'static/'
 
-# Tells django where our static folder is located.
+# Tells django where our static folder is located. In this case, our static folder is located
+# directory : BASEDIR/static
 STATICFILES_DIR = [
     
     os.path.join(BASE_DIR, 'static')

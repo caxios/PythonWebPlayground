@@ -1,0 +1,132 @@
+"""
+This file is created to handle session for basket. Ecommerce basket store what user selected.
+And in order for website to remeber what products were stored in basket, it needs to utilze
+session. Session is simply user information that is saved in server. Why save it? Because in 
+that way, website can provide some kind of personal(?) experience to its user.
+So, instead of create a model that is holding and handling 'Product' object that user wants to 
+temporarly add to basket, this file exists to just use exisiting session data-table to store 
+'Product' objects in the session of each user. So 'Basket' session holds data of 'Product' object.
+"""
+
+from store.models import Product
+from decimal import Decimal
+
+
+class Basket:
+    """
+    A base Basket class, providing some default behaviors that
+    can be inherited or overrided, as necessary.
+    """
+
+    def __init__(self, request):
+        """
+        Q: Why use '__init__'?
+        A: To initialize some default value when 'Basket' object is instantiated. Values in __init__
+           method can always be changed, since they are just initial value of 'Basket' instance.
+
+        'self.session' = store 'request.session'. By this variable, instance of 'Basket' can access to
+        session for user who sent that request.
+        'basket' = It is also variable for 'Basket' instance. This is the one who actually holds
+        session information of user for his/her basket. 
+        """
+
+        # Getting session from user's request
+        self.session = request.session
+
+        # skey : session-key
+        basket = self.session.get('skey')
+        
+        if 'skey' not in request.session:
+            
+            # If the user who sent request have never made session
+            # then, make session for user in session data-table.
+            # And what this code doing is automatically save 'number' key and its value in
+            # session data-table. So this code eventually store
+            # {'skey':{'number':123123}} in session_data in session data-table.
+            # basket = self.session['skey'] = {'number':123123}
+            basket = self.session['skey'] = {}
+        
+        # Now allocate initial value for 'basket' variable
+        self.basket = basket
+
+    def add(self, product, product_qty):
+        """
+        Adding and updating the users basket session data
+        """
+
+        # Get specific product
+        product_id = product.id
+
+        # Check whether product is already in basket or not 
+        if product_id not in self.basket:
+            
+            # If product, which user is try to add basket, really doesn't exist in basket session
+            # then, add product_id, and price information to session(basket). Eventually this would
+            # be saved in session as : {'product_id':{'price':product.price, 'qty':product_qty}}
+            self.basket[product_id] = {'price':str(product.price), 'qty':int(product_qty)}
+
+
+        # Explicitly telling django session is updated. In this case, session is updated since,
+        # we are adding product to basket.
+        self.session.modified = True
+
+
+    def __iter__(self):
+        """
+        Collect the product_id in the session data to query the database
+        and return products
+
+        
+        Q: Why use '__iter__'?
+        A: Since we cannot just retrieve all data objects from session, we need to first access to
+           data-table of session and get 'Product' objects that we added to 'basket' session. 
+
+           
+        'product_ids' = We know 'session_data' column of 'basket' session data-table have all data 
+        of 'Product' objects user have added to basket. Since 'basket' session is originaly of form 
+        {'skey':{'product_id':{'price':product.price, 'qty':product_qty}}} and since 'self.basket' is
+        of form : {'product_id':{'price':product.price, 'qty':product_qty}}, which is dictionary, we 
+        can get its keys, which is 'product_id' of 'Product' objects that is added to the 
+        'basket' sesseion. So if there is two different products in 'basket' session, then it would :
+        {'skey':{'1':{'price':44.9, 'qty':4}},{'2':{'price':15.9, 'qty':1}},}
+        
+        'basket' = This allows modifications to be made to the copy without affecting the original 
+        'self.basket' dictionary. It's crucial because we are not intending to alter the session 
+        data directly during the iteration. We are just augmenting 'basket' temporarily for the 
+        purpose of iteration to display the items in a template.
+        """
+        
+        # Storing list of 'product_id' of 'Product' objects
+        product_ids = self.basket.keys()
+        
+        products = Product.products.filter(id__in=product_ids)
+        
+        # Shallow copy of original 'self.basket'
+        basket = self.basket.copy()
+
+        for product in products:
+            
+            # This code would generate this in 'session_data' of 'basket' session data-table:
+            # {'skey':{'product_id':{'price':product.price, 'qty':product_qty, 'product':product}}}
+            basket[str(product.id)]['product'] = product
+
+        # Copy version of 'basket' will be used.
+        for item in basket.values():
+            item['price'] = Decimal(item['price'])
+            item['total_price'] = item['price'] * item['qty']
+            
+            # 'yield' returns python generator. It means 'yield' returns value of iterable one by one
+            # unlike 'return' returns value of iterable at one time. 
+            yield item
+
+    def __len__(self):
+        """
+        Get the basket data and count the qty of items
+        """
+
+        # 'self.basket.values()' return all {'product_id':{'price':product.price, 'qty':product_qty}}
+        # which are stored in column named 'session_data' of session data-table.
+        return sum(item['qty'] for item in self.basket.values())
+    
+    def get_total_price(self):
+        return sum(item['total_price'] for item in self.basket.values())
