@@ -3,9 +3,17 @@ This file is created to handle session for basket. Ecommerce basket store what u
 And in order for website to remeber what products were stored in basket, it needs to utilze
 session. Session is simply user information that is saved in server. Why save it? Because in 
 that way, website can provide some kind of personal(?) experience to its user.
+
 So, instead of create a model that is holding and handling 'Product' object that user wants to 
-temporarly add to basket, this file exists to just use exisiting session data-table to store 
+temporarly add to basket, this file exists to use exisiting session data-table to store 
 'Product' objects in the session of each user. So 'Basket' session holds data of 'Product' object.
+And this session data is kept, and processed at server-side, unless we use ajax to show result of
+session-update immediately to front-end(this doesn't mean session is updated at front-end, using
+ajax just show the result when server finished session-update).
+
+Since it is not a model, if cookie of browser deleted, then session also get deleted. So unlike
+'Product' objects still exist(since they are made with model, and have its own data-table at data
+base), 'basket' sesssion would be deleted.
 """
 
 from store.models import Product
@@ -55,7 +63,7 @@ class Basket:
         """
 
         # Get specific product
-        product_id = product.id
+        product_id = str(product.id)
 
         # Check whether product is already in basket or not 
         if product_id not in self.basket:
@@ -115,7 +123,7 @@ class Basket:
             item['price'] = Decimal(item['price'])
             item['total_price'] = item['price'] * item['qty']
             
-            # 'yield' returns python generator. It means 'yield' returns value of iterable one by one
+            # 'yield' returns generator. It means 'yield' returns value of iterable one by one
             # unlike 'return' returns value of iterable at one time. 
             yield item
 
@@ -127,6 +135,37 @@ class Basket:
         # 'self.basket.values()' return all {'product_id':{'price':product.price, 'qty':product_qty}}
         # which are stored in column named 'session_data' of session data-table.
         return sum(item['qty'] for item in self.basket.values())
-    
+
     def get_total_price(self):
-        return sum(item['total_price'] for item in self.basket.values())
+        # return sum(item['total_price'] for item in self.basket.values())
+        return sum(Decimal(item['price']) * item['qty'] for item in self.basket.values())
+    
+    def delete(self, product_id):
+        """
+        Delete item from session_data
+        """
+
+        # 'product_id' that we getting from parameter is integer type. And, under if-statement, we
+        # try to access 'product' that we want to delete with 'product_id' key. But since 'product_id'
+        # is string type, we need to change type. Otherwise, we still able to get value of 'product_id'
+        # we cannot retrieve any value since type is mismatch.
+        product_id = str(product_id)
+
+        if product_id in self.basket:
+            del self.basket[product_id]
+            
+        self.save()
+    
+    def update(self, product_id, product_qty):
+        """
+        Update values in session data
+        """
+        product_id = str(product_id)
+
+        if product_id in self.basket:
+            self.basket[product_id]['qty'] = int(product_qty)
+        
+        self.save()
+
+    def save(self):
+        self.session.modified = True
