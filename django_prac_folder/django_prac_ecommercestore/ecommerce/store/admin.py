@@ -4,6 +4,7 @@ from .models import Category, Product
 """
 
 """
+
 @admin.register(Category) # same as admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
     """

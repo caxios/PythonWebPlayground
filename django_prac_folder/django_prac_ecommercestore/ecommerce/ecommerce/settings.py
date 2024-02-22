@@ -41,6 +41,7 @@ INSTALLED_APPS = [
 
     'store',
     'basket',
+    'account',
 ]
 
 MIDDLEWARE = [
@@ -130,7 +131,7 @@ USE_TZ = True
 STATIC_URL = 'static/'
 
 # Tells django where our static folder is located. In this case, our static folder is located
-# directory : BASEDIR/static
+# in the directory : BASEDIR/static
 STATICFILES_DIR = [
     
     os.path.join(BASE_DIR, 'static')
@@ -143,3 +144,11 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+#Custom user model
+
+# Tells django where our default user model is going to be placed
+AUTH_USER_MODEL = "account.UserBase"
+
+LOGIN_REDIRECT_URL = '/account/dashboard'
+LOGIN_URL = '/account/login'

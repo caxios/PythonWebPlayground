@@ -1,7 +1,13 @@
 from django.db import models
-from django.contrib.auth.models import User
 
-# reverse is a function that can be used to make url
+
+
+# Since, we have made our custom user model in account app, this import is no longer needed:
+# from django.contrib.auth.models import User
+from django.conf import settings
+
+
+# 'reverse' is a function that can be used to make url
 from django.urls import reverse
 
 # When database is created, data table would named as : "(app folder's name)_(model's name) as default"
@@ -61,7 +67,16 @@ class Category(models.Model):
     
 class Product(models.Model):
     category = models.ForeignKey(Category, related_name='product', on_delete=models.CASCADE)
-    created_by = models.ForeignKey(User, related_name='product_creator', on_delete=models.CASCADE)
+    
+    """
+    Q: Why not using 'from django.contrib.auth.models import User'?
+    A: Since we have made our custom user model in 'account' app, and change some settings that is
+    related to spotting location of user model in settings.py file, we need to consider our default 
+    'User' model is now 'UserBase' model in 'account' app's models.py. And the reason not directly 
+    importing 'UserBase' from 'account' app's folder is to avoid leak of model structure(i guess) 
+    """
+    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='product_creator', on_delete=models.CASCADE)
+    
     title = models.CharField(max_length=250)
     author = models.CharField(max_length=255, default='admin')
     description = models.TextField(blank=True)
