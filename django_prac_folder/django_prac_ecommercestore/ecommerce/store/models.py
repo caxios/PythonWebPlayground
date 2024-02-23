@@ -71,9 +71,9 @@ class Product(models.Model):
     """
     Q: Why not using 'from django.contrib.auth.models import User'?
     A: Since we have made our custom user model in 'account' app, and change some settings that is
-    related to spotting location of user model in settings.py file, we need to consider our default 
-    'User' model is now 'UserBase' model in 'account' app's models.py. And the reason not directly 
-    importing 'UserBase' from 'account' app's folder is to avoid leak of model structure(i guess) 
+       related to spotting location of user model in settings.py file, we need to consider our default 
+       'User' model is now 'UserBase' model in 'account' app's models.py. And the reason not directly 
+       importing 'UserBase' from 'account' app's folder is to avoid leak of model structure(i guess) 
     """
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='product_creator', on_delete=models.CASCADE)
     
@@ -88,7 +88,15 @@ class Product(models.Model):
     updated = models.DateTimeField(auto_now=True)
     slug = models.SlugField(max_length=255)
     
-    # 
+
+    """
+    Q: Why there is two manager assigned, objects and products each?
+    A: We need these two code, since we are using custom model manager, which is given to variable 
+       named 'products', along side with default model manager. So, if not specifying this code, 
+       then django would think we are only using that 'ProductManager' as the only model manager 
+       we are going to use for this model. However since we want to utilize both default model manager
+       and custom model manager, we are explicitly setting those two model managers.
+    """
     objects = models.Manager()
     
     # Since 'ProductManager' overriding 'set_queryset' from its parent(models.Manager), and filtering
