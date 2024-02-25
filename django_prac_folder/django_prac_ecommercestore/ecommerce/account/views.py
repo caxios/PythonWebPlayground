@@ -1,17 +1,23 @@
+from django.contrib.auth import login, logout
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from django.contrib.sites.shortcuts import get_current_site
 from django.template.loader import render_to_string
-from django.utils.encoding import force_bytes, force_text
+from django.utils.encoding import force_bytes, force_str
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 
 from .forms import RegistrationForm
 from .token import account_activation_token
+from .models import UserBase
 
-# Create your views here.
+@login_required
+def dashboard(request):
+    return render(request, 'account/user/dashboard.html')
+
 def account_register(request):
 
-    if request.user.is_authenticated:
-        return redirect('/')
+    # if request.user.is_authenticated:
+    #     return redirect('/')
 
     if request.method == "POST":
         registerform = RegistrationForm(request.POST)
@@ -40,9 +46,12 @@ def account_register(request):
             # after we call the 'is_valid' method on our form instance. It can detect and clean
             # injected code, or other harmful things from data that is submitted.
             user.email = registerform.cleaned_data['email']
+
+            # 'set_password' is a method of django's 'User' model
             user.set_password = registerform.cleaned_data['password']
 
-            # To make them activate themselves through their email
+            # To make them activate themselves through their email that handles password hashing 
+            # before saving it to the database
             user.is_active = False
             
             # Now map(save) this form to 'UserBase' model. It means now new 'UserBase' instance is
@@ -65,4 +74,22 @@ def account_register(request):
             
             # 'email_user' method of "UserBase" model will be made later.
             user.email_user(subject=subject, message=message)
+    else:
+        registerform = RegistrationForm()
+    return render(request, 'account/registration/register.html', {'form':registerform})
 
+# User is activated via this view function. 
+def account_activate(request, uidb64, token):
+    try:
+        uid = force_str(urlsafe_base64_decode(uidb64))
+        user = UserBase.objects.get(pk=uid)
+        
+        if user is not None and account_activation_token(user, token):
+            user.is_active = True
+            user.save()
+            login(request, user)
+            return redirect('account:dashboard')
+        else:
+            return render(request, 'account/registration/activation_invalid.html')
+    except:
+        print("error")

@@ -128,7 +128,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
 # Specifies the URL prefix that will be used when referring to static files.
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
 
 # Tells django where our static folder is located. In this case, our static folder is located
 # in the directory : BASEDIR/static
@@ -152,3 +152,6 @@ AUTH_USER_MODEL = "account.UserBase"
 
 LOGIN_REDIRECT_URL = '/account/dashboard'
 LOGIN_URL = '/account/login'
+
+# Email setting
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
