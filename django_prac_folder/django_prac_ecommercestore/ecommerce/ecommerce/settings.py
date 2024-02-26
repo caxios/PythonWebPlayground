@@ -150,6 +150,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # Tells django where our default user model is going to be placed
 AUTH_USER_MODEL = "account.UserBase"
 
+# Tells django after login, redirect user to this url path.
 LOGIN_REDIRECT_URL = '/account/dashboard'
 LOGIN_URL = '/account/login'
 

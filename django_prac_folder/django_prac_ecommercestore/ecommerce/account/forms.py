@@ -1,4 +1,6 @@
 from django import forms
+from django.contrib.auth.forms import (AuthenticationForm)
+
 from .models import UserBase
 
 class RegistrationForm(forms.ModelForm):
@@ -101,3 +103,48 @@ class RegistrationForm(forms.ModelForm):
             {'class': 'form-control mb-3', 'placeholder': 'Password'})
         self.fields['password2'].widget.attrs.update(
             {'class': 'form-control', 'placeholder': 'Repeat Password'})
+
+
+# This form exists to overriding or bringing django's default forms of 'AuthenticationForm'
+# and just changes styling. If we see 'LoginView' there is 'AuthenticationForm'. We are overriding
+# it. Since 'LoginView' or 'LogoutView' implementing 'AuthenticationForm' inside(it is instantiated)
+# we don't need to make logic for login/out process unless we are making our custom logic.
+class UserLoginForm(AuthenticationForm):
+
+    username = forms.CharField(widget=forms.TextInput(
+        attrs={
+            'class': 'form-control mb-3', 
+            'placeholder': 'Username', 
+            'id': 'login-username'}))
+    password = forms.CharField(widget=forms.PasswordInput(
+        attrs={
+            'class': 'form-control',
+            'placeholder': 'Password',
+            'id': 'login-pwd',}))
+
+
+# This form exists to make form for user information editing. 
+class UserEditForm(forms.ModelForm):
+
+    # Since form attribute, 'readonly' is enabled, user can see 'email' and 'user_name' appears their
+    # editing form. But they can't update it. 
+    email = forms.EmailField(
+        label='Account email (can not be changed)', max_length=200, widget=forms.TextInput(
+            attrs={'class': 'form-control mb-3', 'placeholder': 'email', 'id': 'form-email', 'readonly': 'readonly'}))
+    user_name = forms.CharField(
+        label='Username', min_length=4, max_length=50, widget=forms.TextInput(
+            attrs={'class': 'form-control mb-3', 'placeholder': 'Username', 'id': 'form-firstname', 'readonly': 'readonly'}))
+    
+    first_name = forms.CharField(
+        label='Firstname', min_length=4, max_length=50, widget=forms.TextInput(
+            attrs={'class': 'form-control mb-3', 'placeholder': 'Firstname', 'id': 'form-lastname'}))
+
+    class Meta:
+        model = UserBase
+        fields = ('email', 'user_name', 'first_name',)
+
+    # When user editing his/her informations, 'user_name' and 'email' is required. 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['user_name'].required = True
+        self.fields['email'].required = True
