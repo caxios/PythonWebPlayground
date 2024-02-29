@@ -27,6 +27,18 @@ def edit_details(request):
         user_form = UserEditForm(instance=request.user)
     return render(request, "account/user/edit_details.html", {"user_form":user_form})
 
+@login_required
+def delete_user(request):
+    user = UserBase.objects.get(user_name=request.user)
+    user.is_active = False
+    
+    # 'save' method is in 'Model' class of django. And 'UserBase' is inheriting from 
+    # 'AbstractBaseUser' model-class of django, and 'AbstractBaseUser' parent is 'Model' class.
+    user.save()
+    
+    logout(request)
+    return redirect('account:delete_confirmation')
+
 def account_register(request):
 
     # if request.user.is_authenticated:

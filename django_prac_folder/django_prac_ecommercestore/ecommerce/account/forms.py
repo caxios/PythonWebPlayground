@@ -1,5 +1,5 @@
 from django import forms
-from django.contrib.auth.forms import (AuthenticationForm)
+from django.contrib.auth.forms import (AuthenticationForm, PasswordResetForm, SetPasswordForm)
 
 from .models import UserBase
 
@@ -105,7 +105,7 @@ class RegistrationForm(forms.ModelForm):
             {'class': 'form-control', 'placeholder': 'Repeat Password'})
 
 
-# This form exists to overriding or bringing django's default forms of 'AuthenticationForm'
+# This form exists to overriding or bringing django's default form of 'AuthenticationForm'
 # and just changes styling. If we see 'LoginView' there is 'AuthenticationForm'. We are overriding
 # it. Since 'LoginView' or 'LogoutView' implementing 'AuthenticationForm' inside(it is instantiated)
 # we don't need to make logic for login/out process unless we are making our custom logic.
@@ -148,3 +148,23 @@ class UserEditForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         self.fields['user_name'].required = True
         self.fields['email'].required = True
+
+class PwdResetForm(PasswordResetForm):
+
+    email = forms.EmailField(max_length=254, widget=forms.TextInput(
+        attrs={'class':'form-constrol mb-3', 'placeholder':'Email', 'id':'form_email'}))
+    
+    def clean_email(self):
+        email = self.cleaned_data['email']
+        u = UserBase.objects.filter(email=email)
+        if not u:
+            raise forms.ValidationError("We can't find that email address")
+        return email
+    
+class PwdResetConfirmForm(SetPasswordForm):
+    new_password1 = forms.CharField(
+        label='New password', widget=forms.PasswordInput(
+            attrs={'class': 'form-control mb-3', 'placeholder': 'New Password', 'id': 'form-newpass'}))
+    new_password2 = forms.CharField(
+        label='Repeat password', widget=forms.PasswordInput(
+            attrs={'class': 'form-control mb-3', 'placeholder': 'New Password', 'id': 'form-new-pass2'}))
