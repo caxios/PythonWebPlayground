@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'basket',
     'account',
     'payment',
+    'orders',
 ]
 
 MIDDLEWARE = [
@@ -141,13 +142,15 @@ STATICFILES_DIR = [
 MEDIA_URL = "/media/"
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
 
+# Basket session ID
+BASKET_SESSION_ID = 'basket'
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 #Custom user model
-
 # Tells django where our default user model is going to be placed
 AUTH_USER_MODEL = "account.UserBase"
 
@@ -157,3 +160,7 @@ LOGIN_URL = '/account/login'
 
 # Email setting
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+# Need to be added after running '.\stripe listen' in cmd. 
+STRIPE_ENDPOINT_SECRET = ''
+# stripe listen --forward-to localhost:8000/payment/webhook/

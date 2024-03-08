@@ -6,7 +6,9 @@ import sys
 
 def main():
     """Run administrative tasks."""
-    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'ecommerce.settings')
+    # Django access to setting 'ecommerce.settings'. So here, we are letting django know where our
+    # 'settings.py' located.
+    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'ecommerce.settings') 
     try:
         from django.core.management import execute_from_command_line
     except ImportError as exc:

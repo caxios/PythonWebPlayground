@@ -66,6 +66,11 @@ class Category(models.Model):
         return self.name
     
 class Product(models.Model):
+    
+    # 'ForiegnKey' indicates many-to-one relationship. In this case, each instance of 'Product' 
+    # has one link to 'Category' model, while 'Category' can have multiple(many) 'Product'.
+    # For example MacBookPro is product, and its category is laptop. Category laptop has many
+    # different kinds like SamSung, Dell, HP, MacBookPro etc. 
     category = models.ForeignKey(Category, related_name='product', on_delete=models.CASCADE)
     
     """

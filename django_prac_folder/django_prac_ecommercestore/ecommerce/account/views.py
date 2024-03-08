@@ -7,13 +7,15 @@ from django.utils.encoding import force_bytes, force_str
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 from django.http import HttpResponse
 
+from orders.views import user_orders
 from .forms import RegistrationForm, UserEditForm
 from .token import account_activation_token
 from .models import UserBase
 
 @login_required
 def dashboard(request):
-    return render(request, 'account/user/dashboard.html')
+    orders = user_orders(request)
+    return render(request,'account/user/dashboard.html',{'section': 'profile', 'orders': orders})
 
 @login_required
 def edit_details(request):

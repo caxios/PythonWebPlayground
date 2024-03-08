@@ -18,14 +18,22 @@ base), 'basket' sesssion would be deleted.
 
 from store.models import Product
 from decimal import Decimal
-
+from django.conf import settings
 
 class Basket:
     """
     A base Basket class, providing some default behaviors that
     can be inherited or overrided, as necessary.
     """
-
+    
+    """
+    def __init__(self, request):
+    self.session = request.session
+    basket = self.session.get(settings.BASKET_SESSION_ID)
+    if settings.BASKET_SESSION_ID not in request.session:
+        basket = self.session[settings.BASKET_SESSION_ID] = {}
+    self.basket = basket
+    """
     def __init__(self, request):
         """
         Q: Why use '__init__'?
@@ -169,3 +177,16 @@ class Basket:
 
     def save(self):
         self.session.modified = True
+
+    """
+    def clear(self):
+        # Remove basket from session
+        del self.session[settings.BASKET_SESSION_ID]
+        self.save()
+    """
+    def clear(self):
+        
+        # Remove basket from session
+        del self.session['skey']
+        
+        self.save()
