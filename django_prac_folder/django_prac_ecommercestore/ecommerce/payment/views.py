@@ -34,7 +34,7 @@ def BasketView(request):
 
     # To sent 'stripe' api a request we need 'key' that is sent to the 'stripe' server to identify
     # our request. This key acutally need to be secret key
-    stripe.api_key = 'pk_test_51KVDbjHKmi92LSUpXjyot87frrwM5FLOCyXr8fVgaKUR0gb3P6r5xGeXRRij71yoMd6HYoH7gBrKv7Nh58ZBWvRg00NgDe4A5a'
+    stripe.api_key = ''
 
     # We need 'intent' since 'stripe' require it. In general intent exist to process user's action
     intent = stripe.PaymentIntent.create(
