@@ -1,0 +1,19 @@
+# Tells docker a yml(language) version we are gonna use(version of file format)
+version: '3.8'
+
+# 'services' is container. This defines different containers we are gonna use in our application
+services:
+  
+  # 'web' is a common practice to abitraily name our main (django) application.
+  web:
+    
+    # 'build' docker compose how to build image(a tool used to create container)
+    # and it is set to look for './djangobnb_backend' directoty to search the dockerfile
+    # that are gonna be used to create container. 
+    # Dockerfile contains instructions for building docker image.
+    build: ./djangobnb_backend
+    
+    # 'command' would execute command we typed in. In this case, when container is created then,
+    # our container will open server to our local port. This command overrides commands declared
+    # in dockerfile.
+    command: python manage.py runserver 0.0.0.0:8000

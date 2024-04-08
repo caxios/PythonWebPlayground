@@ -15,10 +15,13 @@ ENV PYTHONDONTWRITEBYTECODE 1
 # It is important when we need to monitor behavior of application in real-time.
 ENV PYTHONUNBUFFERED 1
 
-# Run is executed when docker build command is orderd to create docker image(which is used to
-# create container), and commit changes to new image layer.
+# Run is executed when <docker build> command is typed in terminal to create docker 
+# image(which is used to create container), and commit changes to new image layer.
 RUN pip install --upgrade pip
 
-# Copy the 'requirements.txt' file to the current working directory inside the Docker image
+# Copy the 'requirements.txt' file to the current working directory, inside the docker image
 # being built.
 COPY ./requirements.txt .
+
+# Copy entire django project into this folder location.
+COPY . .
