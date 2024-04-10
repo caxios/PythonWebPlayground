@@ -1,1 +1,1 @@
-All my practices to use django framework. Every single little things are gonna be added to this repository to pratice(follow along tutorials, make my own experiments, etc) django.
+All my practices to enhance django skills. Every single little things i have tried are gonna be added to this repository(codes that follow along tutorials, own experiments, etc).
