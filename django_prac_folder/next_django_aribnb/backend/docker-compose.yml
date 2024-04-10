@@ -1,3 +1,5 @@
+# This file essentially makes container based on setting from 'Dockerfile'.
+
 # Tells docker a yml(language) version we are gonna use(version of file format)
 version: '3.8'
 
@@ -17,3 +19,21 @@ services:
     # our container will open server to our local port. This command overrides commands declared
     # in dockerfile.
     command: python manage.py runserver 0.0.0.0:8000
+    
+    # 'volumes' sets persistent storage the container can use. Here, we are mounting
+    # local directory(./djangobnb_backend/) to the directory inside container(/usr/src/djangobnb_backend).
+    # So in this case, when there is changes in local driectory then it would be reflected to
+    # container and vise versa.
+    volumes: 
+      - ./djangobnb_backend/ :/usr/src/djangobnb_backend
+    
+    # 'ports' maps port of host and container. In this case, 8000(on the left side) is host's
+    # port, and 8000(on the right side) is the port inside container. Left side port is where
+    # our host can access to application in container, and right side port is where application
+    # inside container is listening on. In this case, our host and container working on same location.
+    ports:
+      - 8000:8000
+    
+    # 'env_file' specify a location of file where environment variables are stored.
+    env_file:
+      - ./.env.dev
