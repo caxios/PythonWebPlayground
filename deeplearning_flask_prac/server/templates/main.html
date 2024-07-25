@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+    <p class="my-3">안녕하세요, 딥러닝 분석 시스템입니다!</p>
+</div>
+
+<div class="row">
+    <div class="container m-3"></div>
+    <form method="post" enctype="multipart/form-data" id="form">
+        {{form.csrf_token}}
+        <div class="mb-3">
+            <label for="formFile" class="form-label">분석할 파일을 선택해 주세요</label>
+            <input type="file" class="form-control" id="formFile" onchange="add_file(this)" multiple>
+        </div>
+
+        <div class="mb-3 mx-1 row">
+            <div class="row" id="attached-file-list" hidden>
+                첨부된 파일 목록
+            </div>
+            <div class="col-sm-9">
+                <!--첨부되 파일 이름 리스트-->
+                <div class="file-list"></div>
+            </div>
+        </div>
+
+        <a href="#" class="btn btn-outline-primary" id="submit_files">서버 전송하기</a>
+        <a href="#" class="btn btn-outline-primary" id="clear-content-btn">화면 초기화</a>
+    </form>
+
+    
+</div>
+
+<div class="row">
+    <div class="container m-3">
+        <div>
+            <p>서버 처리 결과</p>
+        </div>
+        <div class="form-floating">
+            <textarea readonly class="form-control" placeholder="Leave a comment here" id="floatingTextarea"></textarea>
+            <label for="floatingTextarea">딥러닝 작업이 끝나면 결과가 표시됩니다.</label>
+          </div>
+    </div>
+</div>
+{% endblock %}
